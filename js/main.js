@@ -22,6 +22,7 @@ window.onload = function() {
 	detectorElem = document.getElementById("detector");
 	canvasElem = document.getElementById("output");
 	DEBUGCANVAS = document.getElementById("waveform");
+	volume = document.getElementById("volume");
 	if (DEBUGCANVAS) {
 		waveCanvas = DEBUGCANVAS.getContext("2d");
 		waveCanvas.strokeStyle = "black";

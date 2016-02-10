@@ -4,6 +4,7 @@ var buflen = 1024;
 var buf = new Float32Array(buflen);
 var MIN_SAMPLES = 0; // will be initialized when AudioContext is created.
 var noteStrings = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+var noteIndex = ["1", "2", "3", "4", "5", "6", "7"];
 
 
 function noteFromPitch(frequency) {
@@ -17,6 +18,48 @@ function frequencyFromNoteNumber(note) {
 
 function centsOffFromPitch(frequency, note) {
 	return Math.floor(1200 * Math.log(frequency / frequencyFromNoteNumber(note)) / Math.log(2));
+}
+
+function getNoteIndex(note) {
+	if (note <= 23) {
+		return 0
+	} else if ((note >= 24) && (note <= 35)) {
+		return 1
+	} else if ((note >= 36) && (note <= 47)) {
+		return 2
+	} else if ((note >= 48) && (note <= 59)) {
+		return 3
+	} else if ((note >= 60) && (note <= 71)) {
+		return 4
+	} else if ((note >= 72) && (note <= 83)) {
+		return 5
+	} else if ((note >= 84) && (note <= 95)) {
+		return 6
+	} else if ((note >= 96) && (note <= 107)) {
+		return 7
+	}
+}
+
+function getInputVolume() {
+	var array = new Uint8Array(analyser.frequencyBinCount);
+	analyser.getByteFrequencyData(array);
+	var average = getAverageVolume(array)
+	return average;
+}
+
+function getAverageVolume(array) {
+	var values = 0;
+	var average;
+
+	var length = array.length;
+
+	// get all the frequency amplitudes
+	for (var i = 0; i < length; i++) {
+		values += array[i];
+	}
+
+	average = values / length;
+	return average;
 }
 
 function autoCorrelate(buf, sampleRate) {
@@ -108,7 +151,8 @@ function updatePitch(time) {
 		pitch = ac;
 		pitchElem.innerText = Math.round(pitch);
 		var note = noteFromPitch(pitch);
-		noteElem.innerHTML = noteStrings[note % 12];
+		noteElem.innerHTML = noteStrings[note % 12] + getNoteIndex(note);
+		volume.innerHTML = getInputVolume();
 		var detune = centsOffFromPitch(pitch, note);
 		if (detune == 0) {
 			detuneElem.className = "";
