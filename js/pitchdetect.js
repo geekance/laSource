@@ -103,7 +103,7 @@ function updatePitch(time) {
 		waveCanvas.stroke();
 	}
 
-	if {
+	if (ac != -1) {
 		detectorElem.className = "confident";
 		pitch = ac;
 		pitchElem.innerText = Math.round(pitch);
