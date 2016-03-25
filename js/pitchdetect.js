@@ -37,29 +37,10 @@ function getNoteIndex(note) {
 		return 6
 	} else if ((note >= 96) && (note <= 107)) {
 		return 7
-	}
-}
-
-function getInputVolume() {
-	var array = new Uint8Array(analyser.frequencyBinCount);
-	analyser.getByteFrequencyData(array);
-	var average = getAverageVolume(array)
-	return average;
-}
-
-function getAverageVolume(array) {
-	var values = 0;
-	var average;
-
-	var length = array.length;
-
-	// get all the frequency amplitudes
-	for (var i = 0; i < length; i++) {
-		values += array[i];
+	} else {
+		return 8
 	}
 
-	average = values / length;
-	return average;
 }
 
 function autoCorrelate(buf, sampleRate) {
@@ -117,34 +98,41 @@ function autoCorrelate(buf, sampleRate) {
 	//	var best_frequency = sampleRate/best_offset;
 }
 
+
+function debugCaneva() {
+
+	waveCanvas.clearRect(0, 0, 512, 256);
+	waveCanvas.strokeStyle = "red";
+	waveCanvas.beginPath();
+	waveCanvas.moveTo(0, 0);
+	waveCanvas.lineTo(0, 256);
+	waveCanvas.moveTo(128, 0);
+	waveCanvas.lineTo(128, 256);
+	waveCanvas.moveTo(256, 0);
+	waveCanvas.lineTo(256, 256);
+	waveCanvas.moveTo(384, 0);
+	waveCanvas.lineTo(384, 256);
+	waveCanvas.moveTo(512, 0);
+	waveCanvas.lineTo(512, 256);
+	waveCanvas.stroke();
+	waveCanvas.strokeStyle = "black";
+	waveCanvas.beginPath();
+	waveCanvas.moveTo(0, buf[0]);
+	for (var i = 1; i < 512; i++) {
+		waveCanvas.lineTo(i, 128 + (buf[i] * 128));
+	}
+	waveCanvas.stroke();
+
+	if (!window.requestAnimationFrame)
+		window.requestAnimationFrame = window.webkitRequestAnimationFrame;
+	window.requestAnimationFrame(debugCaneva);
+
+}
+
 function updatePitch(time) {
 	var cycles = new Array;
 	analyser.getFloatTimeDomainData(buf);
 	var ac = autoCorrelate(buf, audioContext.sampleRate);
-
-	if (DEBUGCANVAS) { // This draws the current waveform, useful for debugging
-		waveCanvas.clearRect(0, 0, 512, 256);
-		waveCanvas.strokeStyle = "red";
-		waveCanvas.beginPath();
-		waveCanvas.moveTo(0, 0);
-		waveCanvas.lineTo(0, 256);
-		waveCanvas.moveTo(128, 0);
-		waveCanvas.lineTo(128, 256);
-		waveCanvas.moveTo(256, 0);
-		waveCanvas.lineTo(256, 256);
-		waveCanvas.moveTo(384, 0);
-		waveCanvas.lineTo(384, 256);
-		waveCanvas.moveTo(512, 0);
-		waveCanvas.lineTo(512, 256);
-		waveCanvas.stroke();
-		waveCanvas.strokeStyle = "black";
-		waveCanvas.beginPath();
-		waveCanvas.moveTo(0, buf[0]);
-		for (var i = 1; i < 512; i++) {
-			waveCanvas.lineTo(i, 128 + (buf[i] * 128));
-		}
-		waveCanvas.stroke();
-	}
 
 	if (ac != -1) {
 		detectorElem.className = "confident";
@@ -152,7 +140,6 @@ function updatePitch(time) {
 		pitchElem.innerText = Math.round(pitch);
 		var note = noteFromPitch(pitch);
 		noteElem.innerHTML = noteStrings[note % 12] + getNoteIndex(note);
-		volume.innerHTML = getInputVolume();
 		var detune = centsOffFromPitch(pitch, note);
 		if (detune == 0) {
 			detuneElem.className = "";
@@ -166,7 +153,5 @@ function updatePitch(time) {
 		}
 	}
 
-	if (!window.requestAnimationFrame)
-		window.requestAnimationFrame = window.webkitRequestAnimationFrame;
-	rafID = window.requestAnimationFrame(updatePitch);
 }
+

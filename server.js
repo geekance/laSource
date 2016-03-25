@@ -8,6 +8,7 @@ var fs = require('fs');
 
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/js'));
+app.use(express.static(__dirname + '/sound'));
 app.use(express.static(__dirname + '/img'));
 
 app.get('/', function(req, res) {
@@ -18,8 +19,8 @@ app.get('/', function(req, res) {
 
 //video array 
 
-http.listen(4000, function() {
-  console.log('listening on *:4000' + __dirname);
+http.listen(5000, function() {
+  console.log('listening on *:5000' + __dirname);
 });
 
 //socket.io events
