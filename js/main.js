@@ -80,7 +80,7 @@ window.onload = function() {
 	mid = document.getElementById("mid");
 	low = document.getElementById("low");
 
-	// toggleLiveInput();
+	toggleLiveInput();
 	// video.play();
 }
 
