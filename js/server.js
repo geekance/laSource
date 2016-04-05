@@ -1,12 +1,14 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
 var express = require('express');
 var fs = require('fs');
 
 app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/js'));
 app.use(express.static(__dirname + '/img'));
+app.use(express.static(__dirname + '/images'));
 app.use(express.static(__dirname + '/sound'));
 
 app.get('/', function(req, res) {
@@ -15,7 +17,7 @@ app.get('/', function(req, res) {
     // res.sendfile('idSelec.html');
 });
 
-//video array 
+
 
 http.listen(4000, function() {
 console.log('listening on *:4000' + __dirname);

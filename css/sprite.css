@@ -1,0 +1,77 @@
+
+#sprite-0, #sprite-1, #sprite-2, #sprite-3, #sprite-4 {
+width:100vw;
+height:100vh;
+overflow:hidden;
+}
+
+#sprite-0 {
+position:relative;
+background:wheat;
+}
+
+#sprite-1 {
+position:relative;
+
+background:wheat;
+}
+
+#sprite-2 {
+position:relative;
+
+background:wheat;
+}
+
+#sprite-3 {
+position:relative;
+
+background:wheat;
+}
+
+#sprite-4 {
+position:relative;
+
+background:wheat;
+}
+
+#sprite-0 video, #sprite-1 video, #sprite-2 video, #sprite-3 video, #sprite-4 video{
+width:100vw;
+height:500vh;
+}
+
+#sprite-0 video {
+margin-top:0vh;
+
+}
+
+#sprite-1 video {
+margin-top:-100vh;
+
+}
+
+#sprite-2 video {
+margin-top:-200vh;
+
+}
+
+#sprite-3 video {
+margin-top:-300vh;
+
+}
+
+#sprite-4 video {
+margin-top:-400vh;
+
+}
+
+nav {
+position: fixed;
+z-index:999;
+color:blue;
+
+font-weight: bold;
+font-size: 30px;
+cursor: pointer;
+}
+
+

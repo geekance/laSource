@@ -1,130 +1,81 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-var audioContext = null;
-var isPlaying = false;
-var sourceNode = null;
-var analyser = null;
-var analyserContext = null;
-var theBuffer = null;
-var DEBUGCANVAS = false;
-var mediaStreamSource = null;
-var initialTime = 0;
-var finalTime = 0;
-var maxLoopWithNoSound = 3;
-var phaseTime = 4;
-var soundLevelMin = 10;
-var time = 0; //Time
-var sampleRate = 10; //Time in ms, set period for sampling the mic input
-var phaseId = 0; //Id of the current phase
-var minVelocity = 120;
 
-var detectorElem,
-	canvasElem,
-	waveCanvas,
-	pitchElem,
-	noteElem,
-	detuneElem,
-	detuneAmount,
-	volume,
+//Main Variable
+var phaseId = 0;
+var volumeThreshold = 0;
+var volumeMin = 0;
+var socket = io.connect('breal.local:5000/client')
+
+var volume,
 	phase,
 	timer,
-	video;
+	video,
+	audio;
 
 var a = [];
 
+socket.on('newConfig', newConfig)
+
 window.onload = function() {
-	audioContext = new AudioContext();
-	MAX_SIZE = Math.max(4, Math.floor(audioContext.sampleRate / 5000)); // corresponds to a 5kHz signal
-
-	//-----------
-	// var canvas = document.getElementById('video');
-	// var ctx = canvas.getContext('2d');
-	// var video = document.getElementById('videoS');
-
-	// video.addEventListener('play', function() {
-	// 	var $this = this; //cache
-	// 	(function loop() {
-	// 		if (!$this.paused && !$this.ended) {
-	// 			ctx.drawImage($this, 0, 0);
-	// 			setTimeout(loop, 1000 / 30); // drawing at 30fps
-	// 		}
-	// 	})();
-	// }, 0);
-	//----------
-
-	detectorElem = document.getElementById("detector");
-	canvasElem = document.getElementById("output");
-	DEBUGCANVAS = document.getElementById("waveform");
-	volume = document.getElementById("volume");
-	phase = document.getElementById("phase");
-	timer = document.getElementById("time");
-
-	for (var i = 0; i < 10; i++) {
-		a = document.getElementById("audio"+String(i));
-		a.play();
-		a.loop = true;
-	}
-	
-
-
-	if (DEBUGCANVAS) {
-		waveCanvas = DEBUGCANVAS.getContext("2d");
-		waveCanvas.strokeStyle = "black";
-		waveCanvas.lineWidth = 1;
-	}
-	pitchElem = document.getElementById("pitch");
-	noteElem = document.getElementById("note");
-	detuneElem = document.getElementById("detune");
-	detuneAmount = document.getElementById("detune_amt");
-	high = document.getElementById("high");
-	mid = document.getElementById("mid");
-	low = document.getElementById("low");
-
+	getHTML();
+	setup();
+	startAllSOunds();
 	toggleLiveInput();
-	// video.play();
+	main();
+};
+
+function newConfig(_data) {
+	volumeThreshold = _data.VOLUME_THRESHOLD;
+	volumeMin = _data.VOLUME_MIN;
+	console.log(volumeThreshold);
+}
+
+function setup() {
+	canvasWidth = canvas.width;
+	canvasHeight = canvas.height;
 }
 
 function main() {
-
-	if (initialTime == 0) {
-		finalTime = Date.now();
-	}
-	initialTime = finalTime;
-	finalTime = Date.now();
-
-	if (volume.innerHTML > soundLevelMin) {
-		if (time < 4 * phaseTime) {
-			increaseTime();
-
-		}
-		updatePitch();
-		// console.log("here");
-
-	} else {
-		if (time > 0) {
-			decreaseTime();
-		}
-	}
-	setPhase();
-	timer.innerHTML = time;
-	window.setTimeout(main, sampleRate);
+	micVolume = getInputVolume();
+	setSplit();
+	dealWithTime(volumeMin);
+	updateAnalysers();
+	socket.emit('sendMicVolume', micVolume, phaseId)
+	window.requestAnimationFrame(main);
 }
 
-function setPhase() {
-	if (time == 0) {
-		phaseId = 0;
-		phase.innerHTML = phaseId;
-	} else if (time < phaseTime) {
+function setSplit() {
+
+	if ((micVolume >= 0) && (micVolume < 1 * volumeThreshold)) {
 		phaseId = 1;
 		phase.innerHTML = phaseId;
-	} else if ((time >= phaseTime) && (time < 2 * phaseTime)) {
+
+	} else if ((micVolume >= 1 * volumeThreshold) && (micVolume < 2 * volumeThreshold)) {
 		phaseId = 2;
 		phase.innerHTML = phaseId;
-	} else if ((time >= 2 * phaseTime) && (time < 3 * phaseTime)) {
+
+	} else if ((micVolume >= 2 * volumeThreshold) && (micVolume < 3 * volumeThreshold)) {
 		phaseId = 3;
 		phase.innerHTML = phaseId;
-	} else if ((time >= 3 * phaseTime) && (time < 4 * phaseTime)) {
+
+	} else if ((micVolume >= 3 * volumeThreshold) && (micVolume < 4 * volumeThreshold)) {
 		phaseId = 4;
 		phase.innerHTML = phaseId;
+
+	} else if ((micVolume >= 4 * volumeThreshold) && (micVolume < 5 * volumeThreshold)) {
+		phaseId = 5;
+		phase.innerHTML = phaseId;
+
 	}
+
+	
+}
+
+function getHTML() {
+	volume = document.getElementById("volume");
+	phase = document.getElementById("phase");
+	timer = document.getElementById("time");
+	canvas = document.getElementById("analyser");
+	analyserContext = canvas.getContext('2d');
 }
