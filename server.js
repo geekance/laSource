@@ -7,6 +7,7 @@ var fs = require('fs');
 var config = {
     "VOLUME_THRESHOLD": 10,
     "VOLUME_MIN": 5,
+    "NB_VIDEO_CREATION": 5 
 }
 
 
