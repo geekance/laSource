@@ -92,12 +92,18 @@ function updateAnalysers(time) {
         for (var j = 1; j <= delta; j++)
             magnitude += freqByteData[offset + j];
         magnitude = magnitude / delta;
-        analyserContext.fillStyle = "hsl( " + Math.round((i * 360) / numBars) + ", 100%, 50%)";
-        analyserContext.fillRect(i * SPACING, canvasHeight, BAR_WIDTH, -magnitude);
-        frequencyBand = document.getElementById(String(k));
+        
         audio = document.getElementById("audio" + String(k));
         audio.volume = magnitude / (255 * delta);
-        frequencyBand.innerHTML = magnitude / (255 * delta);
+        if (DEBUG) {
+
+            analyserContext.fillStyle = "hsl( " + Math.round((i * 360) / numBars) + ", 100%, 50%)";
+            analyserContext.fillRect(i * SPACING, canvasHeight, BAR_WIDTH, -magnitude);
+            frequencyBand = document.getElementById(String(k));
+            frequencyBand.innerHTML = magnitude / (255 * delta);
+
+        }
+        
         k = k + 1;
 
     }

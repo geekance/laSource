@@ -6,7 +6,7 @@ var phaseId = 0;
 var volumeThreshold = 0;
 var volumeMin = 0;
 var socket = io.connect('breal.local:5000/client')
-
+var DEBUG = false;
 var volume,
 	phase,
 	timer,
@@ -28,7 +28,6 @@ window.onload = function() {
 function newConfig(_data) {
 	volumeThreshold = _data.VOLUME_THRESHOLD;
 	volumeMin = _data.VOLUME_MIN;
-	console.log(volumeThreshold);
 }
 
 function setup() {
