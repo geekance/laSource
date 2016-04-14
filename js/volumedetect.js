@@ -1,10 +1,21 @@
 var array = new Uint8Array(analyser.frequencyBinCount);
 
-function getInputVolume() {
+function getVolumeState(_volume) {
 	analyser.getByteFrequencyData(array);
+	_volume.micVolume = Math.round(getAverageVolume(array));
+	_volume.isLoudEnough = volumeIsLoudEnough(_volume.micVolume, _volume.volumeStep);
+
 	volume.innerHTML = Math.round(getAverageVolume(array));
 	
-	return volume.innerHTML;
+}
+
+function volumeIsLoudEnough(_volumeIn, _volumeThreshold){
+	if (_volumeIn > _volumeThreshold) {
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 function getAverageVolume(array) {

@@ -2,7 +2,10 @@
 var initialTime = 0;
 var finalTime = 0;
 var phaseTime = 4;
-var time = 0; 
+var timerResetCountDown = 3000;
+var timeDelta = getDeltaBetweenTimes();
+
+window.requestAnimationFrame(getDeltaBetweenTimes);
 
 function getTimeDelta(_initialTime, _finalTime) {
 	var delta = _finalTime - _initialTime;
@@ -20,38 +23,30 @@ function removeTimeDelta(_delta, _time) {
 	return _time;
 }
 
-function increaseTime(_time,_delta) {
+function increaseTime(_time, _delta) {
 	_time = addTimeDelta(_delta, _time);
 	return _time;
 }
 
-function decreaseTime(_speedFactor,_time,_delta) {
+function decreaseTime(_speedFactor, _time, _delta) {
 	if (_time > 0) {
-		_time = removeTimeDelta(_speedFactor*_delta, _time);
-	}	
+		_time = removeTimeDelta(_speedFactor * _delta, _time);
+	}
 	return _time;
 }
 
-function getDeltaBetweenTimes (_initialTime, _finalTime){
-	if (_initialTime === 0) {
-		_finalTime = Date.now();
+function getDeltaBetweenTimes() {
+	if (initialTime === 0) {
+		finalTime = Date.now();
 	}
-	_initialTime = _finalTime;
-	_finalTime = Date.now();
-	return [getTimeDelta(_initialTime, _finalTime),_initialTime,_finalTime];
+	initialTime = finalTime;
+	finalTime = Date.now();
+	timeDelta = getTimeDelta(initialTime, finalTime);
 }
 
-function dealWithTime(_volumeMin){
-	var retuns = getDeltaBetweenTimes(initialTime, finalTime);
-	var delta = retuns[0];
-	initialTime = retuns[1];
-	finalTime = retuns[2];
-	
-	if (micVolume > _volumeMin) {
-		time = increaseTime(time,delta);
+function getTimeOverVolumeMin(_time) {
+	return increaseTime(_time, timeDelta);
 
-	} else {
-		time = decreaseTime(2,time,delta);
-	}
-	timer.innerHTML = Math.round(time);
+
+	// timer.innerHTML = Math.round(time);
 }
