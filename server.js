@@ -4,13 +4,14 @@ var io = require('socket.io')(http);
 var client = io.of('/client')
 var express = require('express');
 var fs = require('fs');
-var videoDuration = 10; //duration of the video in seconds
+var videoDuration = 35; //duration of the video in seconds
 var videoNbPhases = 5; //Number of phases of the videos
 var config = {
-    "VOLUME_THRESHOLD": 35,
-    "VOLUME_MIN": 30,
+    "VOLUME_THRESHOLD": 55,
+    "VOLUME_MIN": 50,
     "NB_VIDEO_CREATION": 5, 
     "VIDEO_THRESHOLD": videoDuration/videoNbPhases,
+    "VIDEO_DURATION": videoDuration,
 }
 
 
@@ -34,8 +35,8 @@ client.on('connection', function(socket) {
 
   console.log("new client");
 
-  socket.on('instalVolumeStepId', function(phaseId, planetId) {
-    client.emit("instalVolumeStepId", phaseId, planetId)
+  socket.on('instalVolumeStepId', function(phaseId) {
+    client.emit("instalVolumeStepId", phaseId)
   })
 
   socket.on('stopVideo', function(planetId) {

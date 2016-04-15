@@ -34,11 +34,6 @@ function emptyBody() {
 }
 
 function main(_videoId, _planetId) {
-	planetId = _planetId;
-	console.log("_videoId:");
-	console.log(_videoId);
-	console.log("_planetId:");
-	console.log(planetId);
 
 	if (!planetIsPlayed) {
 
