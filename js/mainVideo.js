@@ -59,10 +59,16 @@ function createVideoBalise(_nbMaxVideo) {
 	if ($('body').is(":empty")) {
 		for (var i = 1; i <= _nbMaxVideo; i++) {
 			idDiv = "sprite-" + String(i);
-			$('body').append('<div id=' + idDiv + '><video id=video' + i + ' controls="no-controls" autoplay muted><source src="videos/video2.webm" type="video/webm" /></video></div>');
+			src = "videos/video" + i + ".webm";
+			$('body').append('<div id=' + idDiv + ' class="sprite"><video id=video' + i + ' controls="no-controls" autoplay class=' + idDiv +' class="sprite" muted><source src='+ src +' type="video/webm"  /></video></div>');
 		}
+
 		document.getElementById('video1').addEventListener('ended', function() {
 			playPlanet("test")
+		}, false);
+
+		document.getElementById('video1').addEventListener('timeupdate', function(_data) {
+			socket.emit('videoCurrentTime', _data.target.currentTime);
 		}, false);
 	}
 }
@@ -79,95 +85,3 @@ function playPlanet(_planetIdtoPlay) {
 			emptyBody();
 		}, false);
 }
-
-//REFACTOR2----------------
-
-// function dealWithSession(_timeData) {
-// 	if (inSession) {
-// 		inSession = false;
-// 		countDownBelowVolThreshold = 3;
-// 	} else {
-// 		countDownBelowVolThreshold = decreaseTime(1, countDownBelowVolThreshold, _timeData[0])
-// 		if (countDownBelowVolThreshold < 1) {
-// 			removeVideoBalise(nbVideoCreation, "Sprite-");
-// 		}
-
-// 	}
-
-// }
-
-// function setSplitNew(_indexSplit, _timeData, _maxSplits) {
-// 	var delta = _timeData[0];
-// 	initialTime = _timeData[1];
-// 	finalTime = _timeData[2];
-
-// 	if ((micVolume >= _indexSplit * volumeThreshold) && (micVolume < (_indexSplit + 1) * volumeThreshold)) {
-// 		if (!inSession) {
-// 			inSession = true;
-// 			createVideoBalise(nbVideoCreation);
-// 		}
-// 		dealWithSplits(_indexSplit, _maxSplits, delta);
-// 	}
-// }
-
-// function dealWithSplits(_indexSplit, _maxSplits, _delta) {
-// 	for (var i = 1; i <= _maxSplits; i++) {
-// 		if (_indexSplit == i) {
-// 			volumeTimers[i] = increaseTime(volumeTimers[i], _delta);
-// 			if (volumeTimers[i] > volumeDeadBand) {
-// 				var sprite = "#sprite-" + String(i);
-// 				$(sprite).fadeIn().next(fadeOutAllVideosButOne(i, _maxSplits, "#sprite-"));
-// 			}
-// 		} else {
-// 			volumeTimers[i] = 0;
-// 		}
-// 	}
-// }
-
-
-
-// function killAllVideos(_maxSplits, _videoId) {
-// 	for (var i = 1; i <= _maxSplits; i++) {
-// 		var sprite = _videoId + String(i);
-// 		$(sprite).fadeout();
-// 	}
-// 	$("body").empty();
-// }
-
-//REFACTOR----------------
-
-// function setSplitNew(_indexSplit, _timeData, _maxSplits) {
-// 	var delta = _timeData[0];
-// 	initialTime = _timeData[1];
-// 	finalTime = _timeData[2];
-
-// 	if ((micVolume >= _indexSplit * volumeThreshold) && (micVolume < (_indexSplit+1) * volumeThreshold)) {
-// 		dealWithSplits (_indexSplit, _maxSplits, delta);
-// 	}
-// }
-
-// function dealWithSplits (_indexSplit, _maxSplits, _delta){
-// 	for (var i = 0; i < _maxSplits; i++) {
-// 		if (_indexSplit == i){
-// 			volumeTimers[i] = increaseTime(volumeTimers[i], _delta);
-// 			if (volumeTimers[i] > volumeDeadBand){
-// 				fadeOutAllVideosButOne(i,_maxSplits,"#sprite-");
-// 			}	
-// 		}
-// 		else
-// 		{
-// 			volumeTimers[i] = 0;
-// 		}	
-// 	}
-// }
-
-// function fadeOutAllVideosButOne(_indexSplit,_maxSplits, _videoId){
-// 	for (var i = 0; i < _maxSplits; i++) {
-// 		var sprite = _videoId + String(i);
-// 		if (i == _indexSplit){
-// 			$(sprite).fadeIn();
-// 		}else{
-// 			$(sprite).fadeOut();
-// 		}
-// 	}
-// }

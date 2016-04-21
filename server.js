@@ -7,8 +7,8 @@ var fs = require('fs');
 var videoDuration = 35; //duration of the video in seconds
 var videoNbPhases = 5; //Number of phases of the videos
 var config = {
-    "VOLUME_THRESHOLD": 55,
-    "VOLUME_MIN": 50,
+    "VOLUME_THRESHOLD": 25,
+    "VOLUME_MIN": 20,
     "NB_VIDEO_CREATION": 5, 
     "VIDEO_THRESHOLD": videoDuration/videoNbPhases,
     "VIDEO_DURATION": videoDuration,
@@ -38,6 +38,11 @@ client.on('connection', function(socket) {
   socket.on('instalVolumeStepId', function(phaseId) {
     client.emit("instalVolumeStepId", phaseId)
   })
+
+  socket.on('videoCurrentTime', function(currentTime) {
+    client.emit("videoCurrentTime", currentTime)
+  })
+  
 
   socket.on('stopVideo', function(planetId) {
     client.emit("stopVideo", planetId)

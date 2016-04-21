@@ -1,77 +1,50 @@
 
-#sprite-1, #sprite-2, #sprite-3, #sprite-4, #sprite-5 {
+/*#sprite-1, #sprite-2, #sprite-3, #sprite-4, #sprite-5 {
 width:100vw;
 height:100vh;
 overflow:hidden;
-}
+position:relative;
+background:wheat;
+}*/
 
-#sprite-1 {
+.sprite{
+width:100%;
+height:100%;
+overflow:hidden;
 position:relative;
 background:wheat;
 }
 
-#sprite-2 {
-position:relative;
 
-background:wheat;
-}
-
-#sprite-3 {
-position:relative;
-
-background:wheat;
-}
-
-#sprite-4 {
-position:relative;
-
-background:wheat;
-}
-
-#sprite-5 {
-position:relative;
-
-background:wheat;
-}
-
-#sprite-1 video, #sprite-2 video, #sprite-3 video, #sprite-4 video, #sprite-5 video{
+.sprite video{
 width:100vw;
 height:500vh;
 }
 
-#sprite-1 video {
+.sprite-1 {
 margin-top:0vh;
 
 }
 
-#sprite-2 video {
+.sprite-2 {
 margin-top:-100vh;
 
 }
 
-#sprite-3 video {
+.sprite-3 {
 margin-top:-200vh;
 
 }
 
-#sprite-4 video {
+.sprite-4 {
 margin-top:-300vh;
 
 }
 
-#sprite-5 video {
+.sprite-5 {
 margin-top:-400vh;
 
 }
 
-nav {
-position: fixed;
-z-index:999;
-color:blue;
-
-font-weight: bold;
-font-size: 30px;
-cursor: pointer;
-}
 
 

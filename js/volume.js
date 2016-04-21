@@ -8,19 +8,21 @@ instal.volume = (function(window, undefined) {
 	var isLoudEnough = false;
 	var timeOverVolumeMin = 0;
 	var countingDown;
-	var isCountingDown;
+	var isCountingDown = true;
 	var countDownTime = 2000;
 	var nbVolumeSteps = 0;
 	var volumeStepId = 0;
 	var videoStepId = 0;
 	var listeningVolumeStepId = true;
-	var planetIdtoPlay;
+	var planetIdtoPlay = null;
 	var videoDuration;
+	var array = new Uint8Array(analyser.frequencyBinCount);
 
 	function volume() {
 
 
 		socket.on('newConfig', newConfig);
+		socket.on('videoCurrentTime', setTimeOverVolumeMin);
 
 		function newConfig(_data) {
 			volumeStepThreshold = _data.VOLUME_THRESHOLD;
@@ -31,26 +33,37 @@ instal.volume = (function(window, undefined) {
 
 		}
 
+		function setTimeOverVolumeMin(_videoCurrentTime) {
+			timeOverVolumeMin = _videoCurrentTime;
+		}
 
-		function getInstalVolume() {
-			var array = new Uint8Array(analyser.frequencyBinCount);
+		function getInstalVolumeStates() {
+
 
 			analyser.getByteFrequencyData(array);
+
 			micVolume = Math.round(getAverageVolume(array));
+
 			isLoudEnough = volumeIsLoudEnough(micVolume, volumeMin);
 
 			getInstalTimeOverVolumeMin();
 
 			getInstalVolumeStepId();
 
-			if (DEBUG) {
-				timer.innerHTML = timeOverVolumeMin;
-				volumeIn.innerHTML = micVolume;
-				phase.innerHTML = volumeStepId;
-			}
-
-
 		}
+
+		function getAverageVolume(array) {
+			var values = 0;
+			var average;
+			var length = array.length;
+			// get all the frequency amplitudes
+			for (var i = 0; i < length; i++) {
+				values += array[i];
+			}
+			average = values / length;
+			return average;
+		}
+
 
 		function getInstalVolumeStepId() {
 			if (!isLoudEnough) {
@@ -74,29 +87,12 @@ instal.volume = (function(window, undefined) {
 
 		function getInstalTimeOverVolumeMin() {
 			if (isLoudEnough) {
-				if (timeOverVolumeMin >= videoDuration) {
-					timeOverVolumeMin = videoDuration;
-				} else {
-
-					timeOverVolumeMin = getTimeOverVolumeMin(timeOverVolumeMin);
-				}
 				clearTimeout(countingDown);
 				isCountingDown = false;
 			} else {
 				if (!isCountingDown) {
 					isCountingDown = true;
-
 					sendStopVideo();
-				}
-				if (timeOverVolumeMin > 0) {
-					//continue to increment time while counting down in order to 
-					//match with the video avancement
-					if (timeOverVolumeMin >= videoDuration) {
-						timeOverVolumeMin = videoDuration;
-					} else {
-
-						timeOverVolumeMin = getTimeOverVolumeMin(timeOverVolumeMin);
-					}
 				}
 
 			}
@@ -106,7 +102,6 @@ instal.volume = (function(window, undefined) {
 			countingDown = setTimeout(
 				function() {
 					planetIdtoPlay = getPlanetId();
-					// console.log({videoStepId,planetIdtoPlay, timeOverVolumeMin, volumeStepId})
 					timeOverVolumeMin = 0;
 					socket.emit('stopVideo', planetIdtoPlay);
 					clearTimeout(countingDown);
@@ -115,8 +110,8 @@ instal.volume = (function(window, undefined) {
 
 		}
 
-		function volumeIsLoudEnough(_volumeIn, _volumeThreshold) {
-			if (_volumeIn > _volumeThreshold) {
+		function volumeIsLoudEnough(_volumeIn, _volumeMin) {
+			if (_volumeIn > _volumeMin) {
 				return true;
 			} else {
 				return false;
@@ -144,14 +139,12 @@ instal.volume = (function(window, undefined) {
 			return average;
 		}
 
-
-
 		return {
 			isLoudEnough: isLoudEnough,
 			micVolume: micVolume,
 			volumeStepId: volumeStepId,
 			timeOverVolumeMin: timeOverVolumeMin,
-			getInstalVolume: getInstalVolume,
+			getInstalVolumeStates: getInstalVolumeStates,
 			listeningVolumeStepId: listeningVolumeStepId,
 			planetIdtoPlay: planetIdtoPlay,
 			videoStepId: videoStepId,

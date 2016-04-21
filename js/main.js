@@ -3,21 +3,13 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 //Main Variable
 var socket = io.connect('breal.local:5000/client')
-var DEBUG = false;
+var DEBUG = true;
 var LOG = false;
 
 var volume = instal.volume;
 volume();
 
 socket.on('stopVideo', debugLog);
-
-key('l', function() {
-	if (LOG) {
-		LOG = false;
-	} else {
-		LOG = true;
-	}
-});
 
 window.onload = function() {
 	getHTML();
@@ -37,7 +29,17 @@ function setup() {
 }
 
 function main() {
-	volume().getInstalVolume();
+	volume().getInstalVolumeStates();
+
+	if (DEBUG) {
+		timer.innerHTML = volume().timeOverVolumeMin;
+		volumeIn.innerHTML = volume().micVolume;
+		phase.innerHTML = volume().volumeStepId;
+		isLoudEnough.innerHTML = volume().isLoudEnough;
+		listeningVolumeStepId.innerHTML = volume().listeningVolumeStepId;
+		planetIdtoPlay.innerHTML = volume().planetIdtoPlay;
+	}
+
 	if (LOG) {
 		console.log("")
 		console.log(volume());
@@ -57,5 +59,8 @@ function getHTML() {
 	phase = document.getElementById("phase");
 	timer = document.getElementById("time");
 	canvas = document.getElementById("analyser");
+	isLoudEnough = document.getElementById("isLoudEnough");
+	listeningVolumeStepId = document.getElementById("listeningVolumeStepId");
+	planetIdtoPlay = document.getElementById("planetIdtoPlay");
 	analyserContext = canvas.getContext('2d');
 }
